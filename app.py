@@ -21,9 +21,16 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
 
-    # Ensure database tables are created on launch
+    # Ensure database tables are created on launch & auto-seeded if empty
     with app.app_context():
         db.create_all()
+        try:
+            from models.user import User
+            if not User.query.filter_by(role='admin').first():
+                from seed import populate_seed_data
+                populate_seed_data()
+        except Exception as e:
+            app.logger.warning(f"Startup auto-seed note: {e}")
 
     # Register blueprints
     app.register_blueprint(auth_bp)
