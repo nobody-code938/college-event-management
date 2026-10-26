@@ -285,6 +285,7 @@ The project followed a structured sequential Waterfall SDLC model:
 
 The application is architected and configured for permanent 24/7 cloud hosting:
 
+* **Live Production URL:** **[https://college-event-management-9gt4.onrender.com](https://college-event-management-9gt4.onrender.com)**
 * **Production WSGI Server:** `gunicorn` (Python WSGI HTTP Server) configured via [`Procfile`](file:///Users/nex/Desktop/college-event-management/Procfile) (`web: gunicorn "app:create_app()"`).
 * **Infrastructure as Code:** [`render.yaml`](file:///Users/nex/Desktop/college-event-management/render.yaml) blueprint defining build commands, auto-seeding (`python seed.py`), and environment variable generation.
 * **Database Portability:** [`config.py`](file:///Users/nex/Desktop/college-event-management/config.py) automatically detects `DATABASE_URL` for managed PostgreSQL (transforming legacy `postgres://` to `postgresql://`) with seamless fallback to SQLite.

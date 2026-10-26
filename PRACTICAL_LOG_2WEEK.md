@@ -14,7 +14,7 @@
 | **Phase 2: System & DB Design** | Days 4 – 6 | ER Diagram, relational schema, Flask blueprints planning | Database Schema & Architecture Plan |
 | **Phase 3: Module Implementation** | Days 7 – 11 | Authentication, Student portal, Organizer console, Admin & Chart.js | Source Code (`app.py`, `models/`, `routes/`, `templates/`) |
 | **Phase 4: Testing & Integration** | Days 12 – 13| Boundary testing, overbooking check, seed data creation | Test Matrix & Initialized DB (`seed.py`) |
-| **Phase 5: Deployment & Viva Prep** | Day 14 | Local server execution, documentation & viva presentation | Live Server (`http://127.0.0.1:5000`) & Docs |
+| **Phase 5: Deployment & Viva Prep** | Day 14 | Local server verification, 24/7 Render cloud deployment & viva documentation | Live Server ([Render](https://college-event-management-9gt4.onrender.com) & Local `5001`) |
 
 ---
 
@@ -163,7 +163,7 @@
   * Configured production cloud deployment stack: installed and verified `gunicorn` WSGI server, created `Procfile`, and defined Infrastructure-as-Code blueprint (`render.yaml`) for permanent 24/7 web hosting.
   * Initialized Git version control repository (`main` branch) and committed deployment assets.
   * Prepared comprehensive `README.md` and `PROJECT_DOCUMENTATION.md` for project submission.
-* **Deliverable:** Working College Event Management System application configured for local execution and 24/7 cloud deployment.
+* **Deliverable:** Working College Event Management System application live 24/7 at [https://college-event-management-9gt4.onrender.com](https://college-event-management-9gt4.onrender.com) and local `5001`.
 
 ---
 

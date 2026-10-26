@@ -1,5 +1,10 @@
 # College Event Management System
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Render-success?style=for-the-badge&logo=render)](https://college-event-management-9gt4.onrender.com)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?style=for-the-badge&logo=github)](https://github.com/nobody-code938/college-event-management)
+
+🌐 **Live 24/7 Website:** **[https://college-event-management-9gt4.onrender.com](https://college-event-management-9gt4.onrender.com)**
+
 A web-based **College Event Management System** designed for B.Tech CSE 3rd-year capstone projects. Built with **Python, Flask, SQLite, Bootstrap 5, and Chart.js**, this application enables students, faculty organizers, and administrators to seamlessly publish, discover, register, track attendance, and analyze campus events.
 
 ---
@@ -198,7 +203,8 @@ git push -u origin main
    * **Runtime:** `Python 3`
    * **Build Command:** `pip install -r requirements.txt && python seed.py`
    * **Start Command:** `gunicorn "app:create_app()"`
-4. Click **Deploy Web Service**. Render provides a permanent public HTTPS URL (`https://your-app.onrender.com`).
+4. Click **Deploy Web Service**. Render provides a permanent public HTTPS URL:
+   👉 **[https://college-event-management-9gt4.onrender.com](https://college-event-management-9gt4.onrender.com)**
 
 ---
 
