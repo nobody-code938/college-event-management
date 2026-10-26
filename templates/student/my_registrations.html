@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}My Registrations - CampusEvent{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1"><i class="bi bi-ticket-perforated-fill text-primary me-2"></i>My Registered Events</h2>
+        <p class="text-muted mb-0">Track all your registered events, attendance statuses, and manage registrations</p>
+    </div>
+
+    <div class="custom-card p-4">
+        {% if registrations %}
+            <div class="table-responsive">
+                <table class="table custom-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Event Details</th>
+                            <th>Category</th>
+                            <th>Event Date</th>
+                            <th>Registered On</th>
+                            <th>Registration Status</th>
+                            <th>Attendance</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reg in registrations %}
+                            <tr>
+                                <td>
+                                    <strong class="text-dark d-block fs-6">{{ reg.event.title }}</strong>
+                                    <small class="text-muted"><i class="bi bi-geo-alt me-1 text-danger"></i>{{ reg.event.venue }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary-subtle text-secondary">{{ reg.event.category }}</span>
+                                </td>
+                                <td>
+                                    <small class="fw-semibold text-dark">{{ reg.event.date|format_date }}</small>
+                                    <div class="small text-muted">{{ reg.event.time|format_time }}</div>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ reg.registered_at|format_date }}</small>
+                                </td>
+                                <td>
+                                    {% if reg.event.status == 'Cancelled' %}
+                                        <span class="badge bg-danger px-2 py-1">
+                                            <i class="bi bi-exclamation-octagon me-1"></i>Event Cancelled
+                                        </span>
+                                    {% elif reg.status == 'Registered' %}
+                                        <span class="badge badge-registered px-2 py-1">
+                                            <i class="bi bi-check-circle me-1"></i>Registered
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-cancelled px-2 py-1">
+                                            <i class="bi bi-x-circle me-1"></i>Cancelled by You
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if reg.attendance %}
+                                        {% if reg.attendance.status == 'Present' %}
+                                            <span class="badge badge-present px-2 py-1"><i class="bi bi-person-check-fill me-1"></i>Present</span>
+                                        {% elif reg.attendance.status == 'Absent' %}
+                                            <span class="badge badge-absent px-2 py-1"><i class="bi bi-person-x-fill me-1"></i>Absent</span>
+                                        {% else %}
+                                            <span class="badge bg-light text-dark border px-2 py-1">Pending</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-light text-dark border px-2 py-1">Not Marked</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="{{ url_for('student.event_detail', event_id=reg.event.id) }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+
+                                        {% if reg.status == 'Registered' %}
+                                            <form method="POST" action="{{ url_for('student.cancel_registration', reg_id=reg.id) }}" onsubmit="return confirm('Are you sure you want to cancel your registration for this event?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                    <i class="bi bi-x-lg"></i> Cancel
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-ticket-perforated fs-1 text-muted d-block mb-3"></i>
+                <h4>No Registrations Found</h4>
+                <p class="text-muted">You have not registered for any events yet.</p>
+                <a href="{{ url_for('student.events') }}" class="btn btn-primary-gradient mt-2">
+                    <i class="bi bi-compass me-1"></i>Explore Events Now
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

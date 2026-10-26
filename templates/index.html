@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}CampusEvent - Discover. Register. Participate.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center text-md-start">
+    <div class="container">
+        <div class="row align-items-center gy-4">
+            <div class="col-lg-7">
+                <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill mb-3">
+                    <i class="bi bi-stars me-1"></i> B.Tech CSE College Event Platform
+                </span>
+                <h1 class="hero-title mb-3">Discover. Register. Participate.</h1>
+                <p class="hero-subtitle mb-4">
+                    Manage and participate in college events from one simple, unified platform. Explore hackathons, cultural fests, tech symposiums, and sports meets.
+                </p>
+                <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-md-start">
+                    <a href="{{ url_for('public_events') }}" class="btn btn-primary-gradient btn-lg px-4">
+                        <i class="bi bi-compass me-2"></i>Explore Events
+                    </a>
+                    {% if not current_user %}
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-lg px-4 rounded-3">
+                            <i class="bi bi-person-plus me-2"></i>Register Now
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg px-4 rounded-3">
+                            <i class="bi bi-speedometer2 me-2"></i>Go to Dashboard
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-5 text-center">
+                <div class="p-4 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-10 backdrop-blur shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80" alt="Campus Event" class="img-fluid rounded-3 shadow">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Highlight Banner -->
+<section class="py-4 bg-white border-bottom shadow-sm">
+    <div class="container">
+        <div class="row text-center gy-3">
+            <div class="col-6 col-md-3">
+                <h3 class="fw-extrabold text-primary mb-0">8+</h3>
+                <p class="small text-muted mb-0">Active Events</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h3 class="fw-extrabold text-primary mb-0">500+</h3>
+                <p class="small text-muted mb-0">Student Participants</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h3 class="fw-extrabold text-primary mb-0">10+</h3>
+                <p class="small text-muted mb-0">Departments</p>
+            </div>
+            <div class="col-6 col-md-3">
+                <h3 class="fw-extrabold text-primary mb-0">100%</h3>
+                <p class="small text-muted mb-0">Real-Time Updates</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Upcoming Events Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+            <div>
+                <h2 class="fw-bold mb-1"><i class="bi bi-fire text-danger me-2"></i>Upcoming Events</h2>
+                <p class="text-muted mb-0">Don't miss out on upcoming campus opportunities</p>
+            </div>
+            <a href="{{ url_for('public_events') }}" class="btn btn-outline-primary mt-3 mt-md-0 fw-semibold">
+                View All Events <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% if upcoming_events %}
+                {% for event in upcoming_events %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="custom-card h-100 d-flex flex-column">
+                            <div class="card-img-wrapper">
+                                <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=600&q=80" alt="{{ event.title }}">
+                                <span class="category-badge">{{ event.category }}</span>
+                            </div>
+                            <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                                <h5 class="card-title fw-bold mb-2 text-dark">{{ event.title }}</h5>
+                                <p class="card-text text-muted small mb-3 flex-grow-1">
+                                    {{ event.description[:110] }}...
+                                </p>
+                                
+                                <div class="small text-secondary mb-3">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="bi bi-calendar3 me-2 text-primary"></i>
+                                        <span>{{ event.date|format_date }} at {{ event.time|format_time }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="bi bi-geo-alt me-2 text-danger"></i>
+                                        <span>{{ event.venue }}</span>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="bi bi-people me-2 text-info"></i>
+                                        <span>Seats Left: <strong class="text-dark">{{ event.seats_left }}</strong> / {{ event.capacity }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="mt-auto pt-2 border-top">
+                                    {% if session_role == 'student' %}
+                                        <a href="{{ url_for('student.event_detail', event_id=event.id) }}" class="btn btn-primary-gradient w-100">
+                                            View & Register
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary w-100">
+                                            Log in to Register
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">No upcoming events listed yet.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-white border-top border-bottom">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold mb-2">How It Works</h2>
+            <p class="text-muted">Participate in events in three quick steps</p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4 text-center">
+                <div class="p-4 rounded-4 bg-light h-100 border">
+                    <div class="stat-icon primary mx-auto mb-3">
+                        <i class="bi bi-person-plus-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">1. Create Account</h5>
+                    <p class="text-muted small">Sign up with your student details, department, and email address in less than a minute.</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="p-4 rounded-4 bg-light h-100 border">
+                    <div class="stat-icon info mx-auto mb-3">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">2. Explore & Register</h5>
+                    <p class="text-muted small">Browse tech hackathons, workshops, and sports meets. Secure your slot instantly.</p>
+                </div>
+            </div>
+            <div class="col-md-4 text-center">
+                <div class="p-4 rounded-4 bg-light h-100 border">
+                    <div class="stat-icon success mx-auto mb-3">
+                        <i class="bi bi-qr-code-scan"></i>
+                    </div>
+                    <h5 class="fw-bold mb-2">3. Attend & Participate</h5>
+                    <p class="text-muted small">Check in at the venue, get your attendance marked digitally, and earn participation credentials.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

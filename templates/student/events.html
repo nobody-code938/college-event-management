@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Explore Events - CampusEvent{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1"><i class="bi bi-grid-fill text-primary me-2"></i>Campus Events Directory</h2>
+        <p class="text-muted mb-0">Search, filter, and register for upcoming college activities</p>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="custom-card p-3 p-md-4 mb-4">
+        <form method="GET" action="{{ url_for('student.events') if session_role == 'student' else url_for('public_events') }}">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" name="q" value="{{ search_query or '' }}" placeholder="Search by title, description or venue...">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <select class="form-select" name="category">
+                        <option value="All">All Categories</option>
+                        {% for cat in categories %}
+                            {% if cat != 'All' %}
+                                <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select class="form-select" name="sort">
+                        <option value="upcoming" {% if selected_sort == 'upcoming' %}selected{% endif %}>Upcoming</option>
+                        <option value="newest" {% if selected_sort == 'newest' %}selected{% endif %}>Newest</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary-gradient w-100">
+                        <i class="bi bi-funnel me-1"></i>Filter
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Event Cards Grid -->
+    <div class="row g-4">
+        {% if events %}
+            {% for event in events %}
+                <div class="col-md-6 col-lg-4">
+                    <div class="custom-card h-100 d-flex flex-column">
+                        <div class="card-img-wrapper">
+                            <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=600&q=80" alt="{{ event.title }}">
+                            <span class="category-badge">{{ event.category }}</span>
+                        </div>
+
+                        <div class="card-body p-4 d-flex flex-column flex-grow-1">
+                            <h5 class="card-title fw-bold text-dark mb-2">{{ event.title }}</h5>
+                            <p class="card-text text-muted small mb-3 flex-grow-1">
+                                {{ event.description[:110] }}...
+                            </p>
+
+                            <div class="small text-secondary mb-3">
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="bi bi-calendar3 me-2 text-primary"></i>
+                                    <span>{{ event.date|format_date }} at {{ event.time|format_time }}</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="bi bi-geo-alt me-2 text-danger"></i>
+                                    <span>{{ event.venue }}</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="bi bi-person me-2 text-secondary"></i>
+                                    <span>By: {{ event.organizer.name }}</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-people me-2 text-info"></i>
+                                    <span>Seats: 
+                                        {% if event.is_full %}
+                                            <span class="badge bg-danger">Full (0 left)</span>
+                                        {% else %}
+                                            <strong class="text-dark">{{ event.seats_left }}</strong> / {{ event.capacity }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="mt-auto pt-2 border-top">
+                                {% if session_role == 'student' %}
+                                    {% if registered_event_ids and event.id in registered_event_ids %}
+                                        <button class="btn btn-success w-100" disabled>
+                                            <i class="bi bi-check-circle me-1"></i>Already Registered
+                                        </button>
+                                    {% elif event.is_full %}
+                                        <button class="btn btn-secondary w-100" disabled>
+                                            <i class="bi bi-x-circle me-1"></i>Event Full
+                                        </button>
+                                    {% else %}
+                                        <a href="{{ url_for('student.event_detail', event_id=event.id) }}" class="btn btn-primary-gradient w-100">
+                                            Register for Event
+                                        </a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary w-100">
+                                        Log in to Register
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5">
+                <div class="custom-card p-5">
+                    <i class="bi bi-search fs-1 text-muted d-block mb-3"></i>
+                    <h4>No events found</h4>
+                    <p class="text-muted">Try adjusting your search query or category filters.</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

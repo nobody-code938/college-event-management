@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Event - {{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="custom-card p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                    <div class="stat-icon info">
+                        <i class="bi bi-pencil-square"></i>
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-1">Edit Event</h3>
+                        <p class="text-muted mb-0">Update event schedule, venue, or status</p>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('organizer.edit_event', event_id=event.id) }}">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label for="title" class="form-label fw-semibold">Event Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{ event.title }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="category" class="form-label fw-semibold">Event Category *</label>
+                            <select class="form-select" id="category" name="category" required>
+                                {% for cat in categories %}
+                                    <option value="{{ cat }}" {% if event.category == cat %}selected{% endif %}>{{ cat }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="status" class="form-label fw-semibold">Event Status *</label>
+                            <select class="form-select" id="status" name="status" required>
+                                <option value="Upcoming" {% if event.status == 'Upcoming' %}selected{% endif %}>Upcoming</option>
+                                <option value="Completed" {% if event.status == 'Completed' %}selected{% endif %}>Completed</option>
+                                <option value="Cancelled" {% if event.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="date" class="form-label fw-semibold">Event Date *</label>
+                            <input type="date" class="form-control" id="date" name="date" value="{{ event.date.strftime('%Y-%m-%d') }}" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="time" class="form-label fw-semibold">Event Time *</label>
+                            <input type="time" class="form-control" id="time" name="time" value="{{ event.time.strftime('%H:%M') }}" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="capacity" class="form-label fw-semibold">Capacity *</label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" value="{{ event.capacity }}" min="1" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="venue" class="form-label fw-semibold">Venue / Location *</label>
+                            <input type="text" class="form-control" id="venue" name="venue" value="{{ event.venue }}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label for="description" class="form-label fw-semibold">Detailed Description *</label>
+                            <textarea class="form-control" id="description" name="description" rows="5" required>{{ event.description }}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                        <a href="{{ url_for('organizer.my_events') }}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary-gradient px-4">
+                            <i class="bi bi-check-lg me-1"></i>Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

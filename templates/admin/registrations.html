@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}All Registrations - Admin Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-card-checklist text-primary me-2"></i>System Registrations Log</h2>
+            <p class="text-muted mb-0">Master record of all student event registrations and check-ins</p>
+        </div>
+        <a href="{{ url_for('admin.export_registrations_csv') }}" class="btn btn-outline-success mt-3 mt-md-0">
+            <i class="bi bi-file-earmark-excel me-1"></i>Export Registrations CSV
+        </a>
+    </div>
+
+    <div class="custom-card p-4">
+        {% if registrations %}
+            <div class="table-responsive">
+                <table class="table custom-table align-middle" id="registrationsTable">
+                    <thead>
+                        <tr>
+                            <th>Reg. ID</th>
+                            <th>Student Name</th>
+                            <th>Student Email</th>
+                            <th>Event Title</th>
+                            <th>Category</th>
+                            <th>Registration Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reg in registrations %}
+                            <tr>
+                                <td><span class="badge bg-light text-dark border">#REG-{{ reg.id }}</span></td>
+                                <td><strong class="text-dark">{{ reg.student.name }}</strong></td>
+                                <td><small class="text-muted">{{ reg.student.email }}</small></td>
+                                <td><strong class="text-dark">{{ reg.event.title }}</strong></td>
+                                <td><span class="badge bg-secondary-subtle text-secondary">{{ reg.event.category }}</span></td>
+                                <td><small class="text-muted">{{ reg.registered_at|format_date }}</small></td>
+                                <td>
+                                    {% if reg.status == 'Registered' %}
+                                        <span class="badge badge-registered"><i class="bi bi-check-circle me-1"></i>Active</span>
+                                    {% else %}
+                                        <span class="badge badge-cancelled"><i class="bi bi-x-circle me-1"></i>Cancelled</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-ticket-perforated fs-1 text-muted d-block mb-2"></i>
+                <p class="text-muted mb-0">No registration records found in system.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

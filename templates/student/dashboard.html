@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard - CampusEvent{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-4 rounded-4 bg-white border shadow-sm">
+        <div>
+            <span class="badge bg-primary-subtle text-primary px-3 py-1 rounded-pill mb-2">Student Portal</span>
+            <h2 class="fw-bold mb-1">Welcome back, {{ student.name }}!</h2>
+            <p class="text-muted mb-0"><i class="bi bi-mortarboard me-1"></i>{{ student.department }} • {{ student.year }}</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <a href="{{ url_for('student.events') }}" class="btn btn-primary-gradient px-4">
+                <i class="bi bi-compass me-2"></i>Browse Events
+            </a>
+        </div>
+    </div>
+
+    <!-- Cancellation Notification Banner (Rule 10) -->
+    {% if cancelled_registered_events %}
+        <div class="alert alert-danger d-flex align-items-center mb-4 shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill fs-3 me-3 text-danger"></i>
+            <div>
+                <h6 class="alert-heading fw-bold mb-1">Important Notice: Event Cancellation</h6>
+                <p class="mb-0 small">The organizer has cancelled the following event(s) you were registered for:</p>
+                <ul class="mb-0 mt-1 ps-3 small">
+                    {% for r in cancelled_registered_events %}
+                        <li><strong>{{ r.event.title }}</strong> (Originally scheduled for {{ r.event.date|format_date }})</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Stat Metric Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ total_events_count }}</div>
+                    <div class="stat-label">Available Events</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon info">
+                    <i class="bi bi-ticket-perforated"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ total_registrations }}</div>
+                    <div class="stat-label">My Registrations</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ presents }} / {{ total_marked }}</div>
+                    <div class="stat-label">Attendance Score</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <i class="bi bi-pie-chart"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ attendance_rate }}%</div>
+                    <div class="stat-label">Attendance Rate</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Upcoming Registered Events -->
+        <div class="col-lg-8">
+            <div class="custom-card p-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-clock-history text-primary me-2"></i>My Upcoming Registered Events</h5>
+                    <a href="{{ url_for('student.my_registrations') }}" class="small fw-bold text-primary">View All</a>
+                </div>
+
+                {% if upcoming_registrations %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Event Title</th>
+                                    <th>Category</th>
+                                    <th>Date & Time</th>
+                                    <th>Venue</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reg in upcoming_registrations %}
+                                    <tr>
+                                        <td>
+                                            <strong class="text-dark">{{ reg.event.title }}</strong>
+                                        </td>
+                                        <td><span class="badge bg-secondary-subtle text-secondary">{{ reg.event.category }}</span></td>
+                                        <td>
+                                            <small class="d-block"><i class="bi bi-calendar me-1"></i>{{ reg.event.date|format_date }}</small>
+                                            <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ reg.event.time|format_time }}</small>
+                                        </td>
+                                        <td><small>{{ reg.event.venue }}</small></td>
+                                        <td>
+                                            <a href="{{ url_for('student.event_detail', event_id=reg.event.id) }}" class="btn btn-sm btn-outline-primary">
+                                                Details
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-ticket-detailed fs-1 d-block mb-2 text-secondary"></i>
+                        <p class="mb-2">You haven't registered for any upcoming events yet.</p>
+                        <a href="{{ url_for('student.events') }}" class="btn btn-sm btn-primary-gradient">Explore Events Now</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Quick Profile & Attendance Breakdown -->
+        <div class="col-lg-4">
+            <div class="custom-card p-4 h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-person-badge text-primary me-2"></i>Student Summary</h5>
+                
+                <div class="p-3 bg-light rounded-3 mb-3">
+                    <p class="small text-muted mb-1">Student Name</p>
+                    <p class="fw-bold text-dark mb-2">{{ student.name }}</p>
+                    <p class="small text-muted mb-1">Email</p>
+                    <p class="fw-bold text-dark mb-2">{{ student.email }}</p>
+                    <p class="small text-muted mb-1">Department & Year</p>
+                    <p class="fw-bold text-dark mb-0">{{ student.department }} ({{ student.year }})</p>
+                </div>
+
+                <div class="p-3 border rounded-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="small fw-semibold text-muted">Attendance Goal</span>
+                        <span class="small fw-bold text-primary">{{ attendance_rate }}%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: {{ attendance_rate }}%;" aria-valuenow="{{ attendance_rate }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-3 border-top text-center">
+                    <a href="{{ url_for('student.profile') }}" class="btn btn-sm btn-outline-secondary w-100">
+                        <i class="bi bi-gear me-1"></i>Manage Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

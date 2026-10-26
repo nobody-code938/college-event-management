@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}All Events - Admin Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-calendar-range-fill text-primary me-2"></i>System-wide Events</h2>
+            <p class="text-muted mb-0">Overview and administrative moderation of all campus events</p>
+        </div>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="custom-card p-3 mb-4">
+        <form method="GET" action="{{ url_for('admin.events') }}">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" name="q" value="{{ search_query or '' }}" placeholder="Search title or venue...">
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <select class="form-select" name="category">
+                        <option value="All">All Categories</option>
+                        {% for cat in categories %}
+                            {% if cat != 'All' %}
+                                <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <select class="form-select" name="status">
+                        <option value="All">All Statuses</option>
+                        <option value="Upcoming" {% if selected_status == 'Upcoming' %}selected{% endif %}>Upcoming</option>
+                        <option value="Completed" {% if selected_status == 'Completed' %}selected{% endif %}>Completed</option>
+                        <option value="Cancelled" {% if selected_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary-gradient w-100"><i class="bi bi-funnel me-1"></i>Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Events List Table -->
+    <div class="custom-card p-4">
+        {% if events %}
+            <div class="table-responsive">
+                <table class="table custom-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Organizer</th>
+                            <th>Date & Time</th>
+                            <th>Venue</th>
+                            <th>Reg. / Capacity</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                            <tr>
+                                <td><strong class="text-dark">{{ event.title }}</strong></td>
+                                <td><span class="badge bg-secondary-subtle text-secondary">{{ event.category }}</span></td>
+                                <td><small class="fw-semibold text-primary">{{ event.organizer.name }}</small></td>
+                                <td>
+                                    <small class="d-block text-dark fw-semibold">{{ event.date|format_date }}</small>
+                                    <small class="text-muted">{{ event.time|format_time }}</small>
+                                </td>
+                                <td><small>{{ event.venue }}</small></td>
+                                <td>
+                                    <span class="fw-bold">{{ event.registered_count }}</span> / {{ event.capacity }}
+                                </td>
+                                <td>
+                                    <span class="badge {% if event.status == 'Upcoming' %}badge-upcoming{% elif event.status == 'Completed' %}badge-completed{% else %}badge-cancelled{% endif %}">
+                                        {{ event.status }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <form method="POST" action="{{ url_for('admin.delete_event', event_id=event.id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete event {{ event.title }}?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Event">
+                                            <i class="bi bi-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x fs-1 text-muted d-block mb-2"></i>
+                <p class="text-muted mb-0">No events found matching your filter criteria.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

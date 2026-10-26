@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}User Details - {{ user.name }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="custom-card p-4 p-md-5 mb-4">
+                <div class="d-flex align-items-center justify-content-between mb-4 pb-3 border-bottom">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-2" style="width: 64px; height: 64px;">
+                            {{ user.name[0].upper() }}
+                        </div>
+                        <div>
+                            <h3 class="fw-bold mb-1">{{ user.name }}</h3>
+                            <p class="text-muted mb-0"><i class="bi bi-envelope me-1"></i>{{ user.email }}</p>
+                        </div>
+                    </div>
+                    <span class="badge bg-primary text-uppercase fs-6 px-3 py-2">{{ user.role }}</span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-semibold">DEPARTMENT</label>
+                        <p class="fw-bold text-dark mb-0">{{ user.department or 'N/A' }}</p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-semibold">ACADEMIC YEAR</label>
+                        <p class="fw-bold text-dark mb-0">{{ user.year or 'N/A' }}</p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-semibold">PHONE CONTACT</label>
+                        <p class="fw-bold text-dark mb-0">{{ user.phone or 'N/A' }}</p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label text-muted small fw-semibold">JOINED DATE</label>
+                        <p class="fw-bold text-dark mb-0">{{ user.created_at|format_date }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {% if user.role == 'student' %}
+                <div class="custom-card p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-ticket-perforated text-primary me-2"></i>Registrations History ({{ registrations|length }})</h5>
+                    {% if registrations %}
+                        <ul class="list-group list-group-flush">
+                            {% for reg in registrations %}
+                                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        <strong class="text-dark">{{ reg.event.title }}</strong>
+                                        <small class="d-block text-muted">{{ reg.event.date|format_date }} • {{ reg.event.venue }}</small>
+                                    </div>
+                                    <span class="badge {% if reg.status == 'Registered' %}badge-registered{% else %}badge-cancelled{% endif %}">
+                                        {{ reg.status }}
+                                    </span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0 small">No registered events for this student.</p>
+                    {% endif %}
+                </div>
+            {% elif user.role == 'organizer' %}
+                <div class="custom-card p-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-calendar-check text-primary me-2"></i>Created Events ({{ created_events|length }})</h5>
+                    {% if created_events %}
+                        <ul class="list-group list-group-flush">
+                            {% for event in created_events %}
+                                <li class="list-group-item bg-transparent d-flex justify-content-between align-items-center px-0">
+                                    <div>
+                                        <strong class="text-dark">{{ event.title }}</strong>
+                                        <small class="d-block text-muted">{{ event.date|format_date }} • {{ event.category }}</small>
+                                    </div>
+                                    <span class="badge bg-secondary-subtle text-secondary">{{ event.status }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0 small">No events created by this organizer yet.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <div class="mt-4 text-start">
+                <a href="{{ url_for('admin.users') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i>Back to User List
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

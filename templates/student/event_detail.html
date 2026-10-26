@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ event.title }} - Event Details{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('student.events') }}">Events</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ event.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Event Main Content -->
+        <div class="col-lg-8">
+            <div class="custom-card p-4 p-md-5">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+                    <span class="badge bg-primary px-3 py-2 rounded-pill fs-6">{{ event.category }}</span>
+                    <span class="badge {% if event.status == 'Upcoming' %}badge-upcoming{% elif event.status == 'Completed' %}badge-completed{% else %}badge-cancelled{% endif %} px-3 py-2 fs-6">
+                        {{ event.status }}
+                    </span>
+                </div>
+
+                <h1 class="fw-extrabold text-dark mb-3">{{ event.title }}</h1>
+                
+                <div class="mb-4">
+                    <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1000&q=80" alt="{{ event.title }}" class="img-fluid rounded-4 shadow-sm w-100" style="max-height: 380px; object-fit: cover;">
+                </div>
+
+                <h4 class="fw-bold mb-3">About This Event</h4>
+                <p class="text-secondary lh-lg mb-4" style="white-space: pre-line;">
+                    {{ event.description }}
+                </p>
+
+                <hr class="my-4">
+
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block fw-semibold">DATE & TIME</small>
+                            <span class="fw-bold text-dark fs-6"><i class="bi bi-calendar-event me-2 text-primary"></i>{{ event.date|format_date }}</span>
+                            <div class="small text-muted mt-1"><i class="bi bi-clock me-2"></i>{{ event.time|format_time }}</div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="p-3 bg-light rounded-3">
+                            <small class="text-muted d-block fw-semibold">VENUE</small>
+                            <span class="fw-bold text-dark fs-6"><i class="bi bi-geo-alt me-2 text-danger"></i>{{ event.venue }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registration Action Sidebar -->
+        <div class="col-lg-4">
+            <div class="custom-card p-4 sticky-top" style="top: 90px;">
+                <h5 class="fw-bold mb-3"><i class="bi bi-info-circle me-2 text-primary"></i>Registration Info</h5>
+
+                <ul class="list-group list-group-flush mb-4">
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0">
+                        <span class="text-muted">Organizer</span>
+                        <strong class="text-dark">{{ event.organizer.name }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0">
+                        <span class="text-muted">Department</span>
+                        <span class="text-dark fw-semibold">{{ event.organizer.department or 'N/A' }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0">
+                        <span class="text-muted">Total Capacity</span>
+                        <span class="fw-bold text-dark">{{ event.capacity }} Slots</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center bg-transparent px-0">
+                        <span class="text-muted">Seats Available</span>
+                        <strong class="{% if event.is_full %}text-danger{% else %}text-success{% endif %} fs-5">
+                            {{ event.seats_left }}
+                        </strong>
+                    </li>
+                </ul>
+
+                {% if is_registered %}
+                    <div class="p-3 bg-success-subtle border border-success-subtle text-success rounded-3 mb-3 text-center">
+                        <i class="bi bi-check-circle-fill fs-3 d-block mb-1"></i>
+                        <span class="fw-bold">You are registered for this event!</span>
+                        <small class="d-block text-muted mt-1">Registered on: {{ registration.registered_at|format_date }}</small>
+                    </div>
+                    <a href="{{ url_for('student.my_registrations') }}" class="btn btn-outline-success w-100">
+                        View My Registrations
+                    </a>
+                {% elif event.is_full %}
+                    <div class="p-3 bg-danger-subtle border border-danger-subtle text-danger rounded-3 mb-3 text-center">
+                        <i class="bi bi-x-circle-fill fs-3 d-block mb-1"></i>
+                        <span class="fw-bold">Registration Closed - Event Full</span>
+                    </div>
+                    <button class="btn btn-secondary w-100" disabled>Capacity Full</button>
+                {% else %}
+                    <form method="POST" action="{{ url_for('student.register_event', event_id=event.id) }}">
+                        <button type="submit" class="btn btn-primary-gradient w-100 py-3 fs-6">
+                            <i class="bi bi-ticket-perforated me-2"></i>Confirm Registration
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

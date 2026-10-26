@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Participants - {{ event.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+            <span class="badge bg-primary-subtle text-primary mb-2">Participant Roster</span>
+            <h2 class="fw-bold mb-1"><i class="bi bi-people-fill text-primary me-2"></i>{{ event.title }}</h2>
+            <p class="text-muted mb-0"><i class="bi bi-geo-alt me-1"></i>{{ event.venue }} • {{ event.date|format_date }}</p>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a href="{{ url_for('organizer.export_participants', event_id=event.id) }}" class="btn btn-outline-success">
+                <i class="bi bi-file-earmark-excel me-1"></i>Export CSV
+            </a>
+            <a href="{{ url_for('organizer.attendance', event_id=event.id) }}" class="btn btn-success">
+                <i class="bi bi-clipboard-check me-1"></i>Mark Attendance
+            </a>
+            <a href="{{ url_for('organizer.my_events') }}" class="btn btn-outline-secondary">
+                Back to Events
+            </a>
+        </div>
+    </div>
+
+    <!-- Search Participants Filter -->
+    <div class="custom-card p-3 mb-4">
+        <form method="GET" action="{{ url_for('organizer.participants', event_id=event.id) }}">
+            <div class="row g-3">
+                <div class="col-md-9">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" name="q" value="{{ search_query or '' }}" placeholder="Search by student name, email or department...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary-gradient w-100">Search Participants</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Participants Table -->
+    <div class="custom-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Registered Students ({{ registrations|length }})</h5>
+            <span class="small text-muted">Capacity: {{ event.registered_count }} / {{ event.capacity }}</span>
+        </div>
+
+        {% if registrations %}
+            <div class="table-responsive">
+                <table class="table custom-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Email Address</th>
+                            <th>Department</th>
+                            <th>Academic Year</th>
+                            <th>Registered On</th>
+                            <th>Attendance Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for reg in registrations %}
+                            <tr>
+                                <td><strong class="text-dark">{{ reg.student.name }}</strong></td>
+                                <td><small class="text-muted">{{ reg.student.email }}</small></td>
+                                <td><span class="badge bg-light text-dark border">{{ reg.student.department or 'N/A' }}</span></td>
+                                <td><small class="fw-semibold">{{ reg.student.year or 'N/A' }}</small></td>
+                                <td><small class="text-muted">{{ reg.registered_at|format_date }}</small></td>
+                                <td>
+                                    {% if reg.attendance %}
+                                        {% if reg.attendance.status == 'Present' %}
+                                            <span class="badge badge-present px-2 py-1"><i class="bi bi-check-circle me-1"></i>Present</span>
+                                        {% elif reg.attendance.status == 'Absent' %}
+                                            <span class="badge badge-absent px-2 py-1"><i class="bi bi-x-circle me-1"></i>Absent</span>
+                                        {% else %}
+                                            <span class="badge bg-light text-dark border px-2 py-1">Pending</span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-light text-dark border px-2 py-1">Not Marked</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-person-x fs-1 text-muted d-block mb-2"></i>
+                <p class="text-muted mb-0">No registered participants found matching your criteria.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

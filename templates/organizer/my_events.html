@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage My Events - CampusEvent{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-calendar-check-fill text-primary me-2"></i>My Created Events</h2>
+            <p class="text-muted mb-0">Manage details, monitor registrations, and mark attendance for your events</p>
+        </div>
+        <a href="{{ url_for('organizer.create_event') }}" class="btn btn-primary-gradient mt-3 mt-md-0">
+            <i class="bi bi-plus-circle me-1"></i>Create Event
+        </a>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="custom-card p-3 mb-4">
+        <form method="GET" action="{{ url_for('organizer.my_events') }}">
+            <div class="row g-3">
+                <div class="col-md-7">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="text" class="form-control" name="q" value="{{ search_query or '' }}" placeholder="Search by event title...">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="status">
+                        <option value="All">All Statuses</option>
+                        <option value="Upcoming" {% if selected_status == 'Upcoming' %}selected{% endif %}>Upcoming</option>
+                        <option value="Completed" {% if selected_status == 'Completed' %}selected{% endif %}>Completed</option>
+                        <option value="Cancelled" {% if selected_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-secondary w-100"><i class="bi bi-funnel me-1"></i>Filter</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Events List Table -->
+    <div class="custom-card p-4">
+        {% if events %}
+            <div class="table-responsive">
+                <table class="table custom-table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Date & Time</th>
+                            <th>Venue</th>
+                            <th>Capacity / Reg.</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                            <tr>
+                                <td><strong class="text-dark fs-6">{{ event.title }}</strong></td>
+                                <td><span class="badge bg-secondary-subtle text-secondary">{{ event.category }}</span></td>
+                                <td>
+                                    <small class="d-block text-dark fw-semibold">{{ event.date|format_date }}</small>
+                                    <small class="text-muted">{{ event.time|format_time }}</small>
+                                </td>
+                                <td><small>{{ event.venue }}</small></td>
+                                <td>
+                                    <span class="fw-bold text-primary">{{ event.registered_count }}</span> / {{ event.capacity }}
+                                    {% if event.is_full %}<span class="badge bg-danger ms-1">Full</span>{% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge {% if event.status == 'Upcoming' %}badge-upcoming{% elif event.status == 'Completed' %}badge-completed{% else %}badge-cancelled{% endif %}">
+                                        {{ event.status }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="d-flex justify-content-end gap-1">
+                                        <a href="{{ url_for('organizer.participants', event_id=event.id) }}" class="btn btn-sm btn-outline-info" title="View Participants">
+                                            <i class="bi bi-people me-1"></i> Participants
+                                        </a>
+                                        <a href="{{ url_for('organizer.attendance', event_id=event.id) }}" class="btn btn-sm btn-outline-success" title="Mark Attendance">
+                                            <i class="bi bi-clipboard-check me-1"></i> Attendance
+                                        </a>
+                                        <a href="{{ url_for('organizer.edit_event', event_id=event.id) }}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form method="POST" action="{{ url_for('organizer.delete_event', event_id=event.id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to delete event {{ event.title }}?');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x fs-1 text-muted d-block mb-3"></i>
+                <h5>No events found</h5>
+                <p class="text-muted">You haven't created any events matching your filter criteria.</p>
+                <a href="{{ url_for('organizer.create_event') }}" class="btn btn-primary-gradient mt-2">
+                    <i class="bi bi-plus-circle me-1"></i>Create Event Now
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

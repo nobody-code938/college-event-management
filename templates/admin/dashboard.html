@@ -1,0 +1,125 @@
+ƒ{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - CampusEvent{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 p-4 rounded-4 bg-white border shadow-sm">
+        <div>
+            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill mb-2">System Administrator</span>
+            <h2 class="fw-bold mb-1"><i class="bi bi-speedometer2 text-danger me-2"></i>Admin Management Console</h2>
+            <p class="text-muted mb-0">Overview of users, campus events, system analytics and reports</p>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a href="{{ url_for('admin.users') }}" class="btn btn-outline-dark">
+                <i class="bi bi-people me-1"></i>Manage Users
+            </a>
+            <a href="{{ url_for('admin.reports') }}" class="btn btn-primary-gradient">
+                <i class="bi bi-file-earmark-bar-graph me-1"></i>System Reports
+            </a>
+        </div>
+    </div>
+
+    <!-- Stat Metric Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ total_students }}</div>
+                    <div class="stat-label">Total Students</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon warning">
+                    <i class="bi bi-person-badge-fill"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ total_organizers }}</div>
+                    <div class="stat-label">Total Organizers</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon info">
+                    <i class="bi bi-calendar-event-fill"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ total_events }}</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <i class="bi bi-ticket-perforated-fill"></i>
+                </div>
+                <div>
+                    <div class="stat-value">{{ total_registrations }}</div>
+                    <div class="stat-label">Total Registrations</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Analytics Section -->
+    <div class="row g-4 mb-4">
+        <!-- Chart 1: Events by Category -->
+        <div class="col-lg-4">
+            <div class="custom-card p-4 h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-pie-chart text-primary me-2"></i>Events by Category</h5>
+                <div class="chart-container" style="position: relative; height: 260px;">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart 2: Top Events by Registrations -->
+        <div class="col-lg-8">
+            <div class="custom-card p-4 h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-bar-chart-line text-primary me-2"></i>Top Registered Events</h5>
+                <div class="chart-container" style="position: relative; height: 260px;">
+                    <canvas id="eventChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart 3: Monthly Registration Growth -->
+    <div class="row g-4">
+        <div class="col-12">
+            <div class="custom-card p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-graph-up text-info me-2"></i>Monthly Registration Trend</h5>
+                <div class="chart-container" style="position: relative; height: 240px;">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const catLabels = {{ chart_category_labels|tojson }};
+        const catData = {{ chart_category_data|tojson }};
+        const evtLabels = {{ chart_event_labels|tojson }};
+        const evtData = {{ chart_event_data|tojson }};
+        const mLabels = {{ monthly_labels|tojson }};
+        const mData = {{ monthly_data|tojson }};
+
+        renderAdminCharts(catLabels, catData, evtLabels, evtData, mLabels, mData);
+    });
+</script>
+{% endblock %}

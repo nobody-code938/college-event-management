@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}System Reports & Analytics - Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-bar-chart-line-fill text-primary me-2"></i>System Analytics & Reports</h2>
+            <p class="text-muted mb-0">High-level statistical breakdown across users, events, and department engagement</p>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a href="{{ url_for('admin.export_registrations_csv') }}" class="btn btn-outline-success">
+                <i class="bi bi-file-earmark-excel me-1"></i>Export CSV
+            </a>
+            <button class="btn btn-outline-primary" onclick="window.print();">
+                <i class="bi bi-printer me-1"></i>Print Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Summary Banner Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon primary"><i class="bi bi-people"></i></div>
+                <div>
+                    <div class="stat-value">{{ total_users }}</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon info"><i class="bi bi-calendar-event"></i></div>
+                <div>
+                    <div class="stat-value">{{ total_events }}</div>
+                    <div class="stat-label">Total Events</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon warning"><i class="bi bi-ticket-perforated"></i></div>
+                <div>
+                    <div class="stat-value">{{ total_registrations }}</div>
+                    <div class="stat-label">Total Registrations</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon success"><i class="bi bi-check-all"></i></div>
+                <div>
+                    <div class="stat-value">{{ total_attendance }}</div>
+                    <div class="stat-label">Total Attended</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Event Distribution by Category Table -->
+        <div class="col-lg-6">
+            <div class="custom-card p-4 h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-grid-3x3-gap text-primary me-2"></i>Event Distribution by Category</h5>
+                <div class="table-responsive">
+                    <table class="table custom-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th class="text-center">Total Events</th>
+                                <th class="text-end">Total Capacity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stat in category_stats %}
+                                <tr>
+                                    <td><strong class="text-dark">{{ stat.category }}</strong></td>
+                                    <td class="text-center"><span class="badge bg-primary rounded-pill px-3">{{ stat.event_count }}</span></td>
+                                    <td class="text-end fw-bold text-secondary">{{ stat.total_capacity }} Seats</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Participation by Department Table -->
+        <div class="col-lg-6">
+            <div class="custom-card p-4 h-100">
+                <h5 class="fw-bold mb-3"><i class="bi bi-mortarboard text-success me-2"></i>Student Demographics by Department</h5>
+                <div class="table-responsive">
+                    <table class="table custom-table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Department</th>
+                                <th class="text-end">Registered Students</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dept in department_stats %}
+                                <tr>
+                                    <td><strong class="text-dark">{{ dept.department }}</strong></td>
+                                    <td class="text-end"><span class="badge bg-success rounded-pill px-3">{{ dept.user_count }}</span></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

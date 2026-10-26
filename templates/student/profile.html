@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - CampusEvent{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="custom-card p-4 p-md-5">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-2" style="width: 64px; height: 64px;">
+                        {{ student.name[0].upper() }}
+                    </div>
+                    <div>
+                        <h3 class="fw-bold mb-1">{{ student.name }}</h3>
+                        <p class="text-muted mb-0"><i class="bi bi-envelope me-1"></i>{{ student.email }} • <span class="badge bg-primary text-uppercase">{{ student.role }}</span></p>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('student.profile') }}">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label fw-semibold">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" value="{{ student.name }}" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="email" class="form-label fw-semibold">Email Address (Read-only)</label>
+                            <input type="email" class="form-control bg-light" id="email" value="{{ student.email }}" readonly>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="department" class="form-label fw-semibold">Department</label>
+                            <select class="form-select" id="department" name="department">
+                                <option value="Computer Science & Engineering" {% if student.department == 'Computer Science & Engineering' %}selected{% endif %}>Computer Science (CSE)</option>
+                                <option value="Information Technology" {% if student.department == 'Information Technology' %}selected{% endif %}>Information Technology (IT)</option>
+                                <option value="Electronics & Communication" {% if student.department == 'Electronics & Communication' %}selected{% endif %}>Electronics (ECE)</option>
+                                <option value="Mechanical Engineering" {% if student.department == 'Mechanical Engineering' %}selected{% endif %}>Mechanical (ME)</option>
+                                <option value="Civil Engineering" {% if student.department == 'Civil Engineering' %}selected{% endif %}>Civil (CE)</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="year" class="form-label fw-semibold">Academic Year</label>
+                            <select class="form-select" id="year" name="year">
+                                <option value="1st Year" {% if student.year == '1st Year' %}selected{% endif %}>1st Year</option>
+                                <option value="2nd Year" {% if student.year == '2nd Year' %}selected{% endif %}>2nd Year</option>
+                                <option value="3rd Year" {% if student.year == '3rd Year' %}selected{% endif %}>3rd Year</option>
+                                <option value="4th Year" {% if student.year == '4th Year' %}selected{% endif %}>4th Year</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label fw-semibold">Phone Number</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ student.phone or '' }}">
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Member Since</label>
+                            <input type="text" class="form-control bg-light" value="{{ student.created_at|format_date }}" readonly>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-3 border-top text-end">
+                        <button type="submit" class="btn btn-primary-gradient px-4">
+                            <i class="bi bi-check-lg me-1"></i>Save Profile Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
