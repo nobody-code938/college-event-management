@@ -166,6 +166,12 @@ The user interface follows a modern dark-mode aesthetic with strict, semantic co
 * **FOUC Prevention:** Immediate inline pre-render script prevents flash of unstyled content during transitions.
 * **Chart.js Adaptation:** Admin charts automatically update grid line colors and axis label contrast upon theme change.
 
+### 6.3 Dynamic Event Image API & Banner Architecture:
+* **Automated Smart Category Sync:** Every newly created or edited event automatically assigns a high-resolution, category-matching photography banner (Technical, Hackathon, Cultural, Sports, Workshop, Quiz, Gaming, Webinar).
+* **On-Demand AI Image API Integration:** Organizers and Administrators can click **"✨ Auto-Generate via API"** powered by Pollinations AI (`https://image.pollinations.ai/prompt/...`) to generate unique custom event artwork based on title and category.
+* **Interactive Banner Selector Component:** Includes curated preset theme tiles, custom image URL input, real-time live banner preview, and reset-to-default mechanics on both Organizer (`/organizer/events/create`, `/organizer/events/<id>/edit`) and Admin (`/admin/events/<id>/edit`) interfaces.
+* **Template Decoupling:** Replaced legacy hardcoded image URLs with dynamic `@property image_url` on the `Event` model, ensuring all future events inherit appropriate graphics across catalog, cards, and detail pages.
+
 ---
 
 ## 7. SYSTEM MODULES

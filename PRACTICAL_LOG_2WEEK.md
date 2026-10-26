@@ -160,6 +160,8 @@
   * Launched local development server on `http://127.0.0.1:5001`.
   * Implemented standardized design system with dark-mode tokens (`#0B1020` background, `#151C30` surfaces, `#1E293B` elevated, `#A78BFA` primary purple, `#8B5CF6` buttons, `#F8FAFC` main text, `#303A52` borders) and semantic status colors (`#15803D` success, `#92400E` pending, `#B91C1C` error, `#1D4ED8` info).
   * Added responsive Dark / Light Mode Switcher toggle button in the navigation bar with `localStorage` state persistence and real-time Chart.js adaptation.
+  * Implemented dynamic Event Image Architecture: replaced static template images with dynamic `@property image_url`, integrated category-based smart matching, curated preset selector, custom URL input, real-time live preview, and on-demand AI Image Generation via Pollinations API.
+  * Extended Administrator console with dedicated event modification interface (`/admin/events/<id>/edit`) for full oversight of schedules, details, and banners.
   * Configured production cloud deployment stack: installed and verified `gunicorn` WSGI server, created `Procfile`, and defined Infrastructure-as-Code blueprint (`render.yaml`) for permanent 24/7 web hosting.
   * Initialized Git version control repository (`main` branch) and committed deployment assets.
   * Prepared comprehensive `README.md` and `PROJECT_DOCUMENTATION.md` for project submission.

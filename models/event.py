@@ -1,6 +1,19 @@
 from datetime import datetime
 from models import db
 
+CATEGORY_IMAGES = {
+    'Technical': 'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80',
+    'Hackathon': 'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80',
+    'Cultural': 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80',
+    'Sports': 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=800&q=80',
+    'Workshop': 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80',
+    'Quiz': 'https://images.unsplash.com/photo-1606326608606-aa0b62935f2b?auto=format&fit=crop&w=800&q=80',
+    'Gaming': 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80',
+    'Webinar': 'https://images.unsplash.com/photo-1588196749597-9ff075ee6b5b?auto=format&fit=crop&w=800&q=80',
+}
+
+DEFAULT_EVENT_IMAGE = 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80'
+
 class Event(db.Model):
     __tablename__ = 'events'
 
@@ -19,6 +32,17 @@ class Event(db.Model):
 
     # Relationships
     registrations = db.relationship('Registration', backref='event', lazy=True, cascade='all, delete-orphan')
+
+    @property
+    def image_url(self):
+        if self.image:
+            img = self.image.strip()
+            if img.startswith('http://') or img.startswith('https://'):
+                return img
+            for cat, url in CATEGORY_IMAGES.items():
+                if img.lower().startswith(cat.lower()[:4]):
+                    return url
+        return CATEGORY_IMAGES.get(self.category, DEFAULT_EVENT_IMAGE)
 
     @property
     def registered_count(self):

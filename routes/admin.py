@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from sqlalchemy import func
 from models import db
 from models.user import User
-from models.event import Event
+from models.event import Event, CATEGORY_IMAGES
 from models.registration import Registration
 from models.attendance import Attendance
 from utils.decorators import role_required
@@ -186,6 +186,43 @@ def delete_event(event_id):
     db.session.commit()
     flash(f'Event "{title}" deleted by admin.', 'info')
     return redirect(url_for('admin.events'))
+
+@admin_bp.route('/events/<int:event_id>/edit', methods=['GET', 'POST'])
+@role_required('admin')
+def edit_event(event_id):
+    event = Event.query.get_or_404(event_id)
+    categories = ['Technical', 'Cultural', 'Sports', 'Workshop', 'Hackathon', 'Quiz', 'Gaming', 'Webinar']
+
+    if request.method == 'POST':
+        event.title = request.form.get('title', '').strip()
+        event.description = request.form.get('description', '').strip()
+        event.category = request.form.get('category', '').strip()
+        event.venue = request.form.get('venue', '').strip()
+        event.status = request.form.get('status', 'Upcoming')
+
+        custom_img = request.form.get('image', '').strip()
+        if custom_img:
+            event.image = custom_img
+        elif not event.image or event.image == 'default_event.jpg':
+            event.image = CATEGORY_IMAGES.get(event.category, 'default_event.jpg')
+
+        date_str = request.form.get('date', '').strip()
+        time_str = request.form.get('time', '').strip()
+        capacity_str = request.form.get('capacity', '100').strip()
+
+        try:
+            event.date = datetime.strptime(date_str, '%Y-%m-%d').date()
+            event.time = datetime.strptime(time_str, '%H:%M').time()
+            event.capacity = int(capacity_str)
+        except ValueError:
+            flash('Invalid date, time or capacity format.', 'danger')
+            return render_template('admin/edit_event.html', event=event, categories=categories, preset_images=CATEGORY_IMAGES)
+
+        db.session.commit()
+        flash(f'Event "{event.title}" updated successfully by admin.', 'success')
+        return redirect(url_for('admin.events'))
+
+    return render_template('admin/edit_event.html', event=event, categories=categories, preset_images=CATEGORY_IMAGES)
 
 @admin_bp.route('/registrations')
 @role_required('admin')

@@ -55,7 +55,55 @@
 
                         <div class="col-12">
                             <label for="description" class="form-label fw-semibold">Detailed Description *</label>
-                            <textarea class="form-control" id="description" name="description" rows="5" placeholder="Provide event schedule, prerequisites, rules, and guidelines..." required></textarea>
+                            <textarea class="form-control" id="description" name="description" rows="4" placeholder="Provide event schedule, prerequisites, rules, and guidelines..." required></textarea>
+                        </div>
+
+                        <!-- Event Banner / Image Selection -->
+                        <div class="col-12 mt-3 pt-3 border-top">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="form-label fw-bold mb-0">
+                                    <i class="bi bi-image-fill text-primary me-1"></i>Event Banner Image
+                                </label>
+                                <span class="badge bg-primary-subtle text-primary">Smart Auto-Sync</span>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                The banner automatically adapts when you select an <strong>Event Category</strong> above. You can also pick a preset theme or paste a custom image URL below.
+                            </p>
+
+                            <div class="row g-3 align-items-center">
+                                <div class="col-md-5">
+                                    <div class="card overflow-hidden border shadow-sm" style="border-radius: 12px;">
+                                        <img id="imagePreview" src="{{ preset_images['Technical'] }}" alt="Event Banner Preview" class="w-100" style="height: 150px; object-fit: cover;">
+                                        <div class="p-2 bg-dark bg-opacity-75 text-white small text-center">
+                                            <i class="bi bi-eye me-1"></i>Live Banner Preview
+                                        </div>
+                                    </div>
+                                </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <label class="form-label small fw-semibold text-secondary mb-0">Quick Preset Themes:</label>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" id="generateAiImageBtn" title="Auto-generate a unique image using title and category">
+                                            <i class="bi bi-stars me-1"></i>Auto-Generate via API
+                                        </button>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-1 mb-3" id="presetButtons">
+                                        {% for cat_name, img_url in preset_images.items() %}
+                                            <button type="button" class="btn btn-sm btn-outline-secondary preset-btn" data-url="{{ img_url }}">
+                                                {{ cat_name }}
+                                            </button>
+                                        {% endfor %}
+                                    </div>
+
+                                    <label for="imageInput" class="form-label small fw-semibold text-secondary mb-1">Custom Image URL (Optional):</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+                                        <input type="url" class="form-control" id="imageInput" name="image" placeholder="Paste custom image link or leave blank for category default">
+                                        <button type="button" class="btn btn-outline-secondary" id="resetImageBtn" title="Reset to Category Default">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                        </button>
+                                    </div>
+                                    <div class="form-text small">Leave blank to use the curated category banner automatically.</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -70,4 +118,64 @@
         </div>
     </div>
 </div>
+
+<script>
+    const categoryDefaults = {{ preset_images | tojson }};
+    const categorySelect = document.getElementById('category');
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const resetBtn = document.getElementById('resetImageBtn');
+
+    function updatePreview(url) {
+        if (!url) {
+            const currentCat = categorySelect ? categorySelect.value : 'Technical';
+            url = categoryDefaults[currentCat] || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80';
+        }
+        imagePreview.src = url;
+    }
+
+    if (categorySelect) {
+        categorySelect.addEventListener('change', function() {
+            if (!imageInput.value.trim()) {
+                updatePreview(categoryDefaults[this.value]);
+            }
+        });
+    }
+
+    if (imageInput) {
+        imageInput.addEventListener('input', function() {
+            const url = this.value.trim();
+            updatePreview(url);
+        });
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            imageInput.value = '';
+            const currentCat = categorySelect ? categorySelect.value : 'Technical';
+            updatePreview(categoryDefaults[currentCat]);
+        });
+    }
+
+    const aiBtn = document.getElementById('generateAiImageBtn');
+    if (aiBtn) {
+        aiBtn.addEventListener('click', function() {
+            const titleInput = document.getElementById('title');
+            const titleVal = titleInput ? titleInput.value.trim() : '';
+            const catVal = categorySelect ? categorySelect.value.trim() : 'Event';
+            const query = (titleVal ? `${titleVal} ${catVal}` : `college ${catVal} event`).replace(/[^a-zA-Z0-9 ]/g, '').trim().replace(/\s+/g, '-');
+            const apiUrl = `https://image.pollinations.ai/prompt/${query}?width=800&height=450&nologo=true`;
+            imageInput.value = apiUrl;
+            updatePreview(apiUrl);
+        });
+    }
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const url = this.getAttribute('data-url');
+            imageInput.value = url;
+            updatePreview(url);
+        });
+    });
+</script>
 {% endblock %}

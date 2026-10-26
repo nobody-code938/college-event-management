@@ -4,7 +4,7 @@ from datetime import datetime, date
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, Response
 from models import db
 from models.user import User
-from models.event import Event
+from models.event import Event, CATEGORY_IMAGES
 from models.registration import Registration
 from models.attendance import Attendance
 from utils.decorators import role_required
@@ -84,12 +84,13 @@ def create_event():
         time_str = request.form.get('time', '').strip()
         venue = request.form.get('venue', '').strip()
         capacity_str = request.form.get('capacity', '100').strip()
-        image = request.form.get('image', '').strip() or 'default_event.jpg'
+        image = request.form.get('image', '').strip() or CATEGORY_IMAGES.get(category, 'default_event.jpg')
 
         # Basic Form Validation
+        categories = ['Technical', 'Cultural', 'Sports', 'Workshop', 'Hackathon', 'Quiz', 'Gaming', 'Webinar']
         if not title or not description or not category or not date_str or not time_str or not venue:
             flash('All required fields must be filled out.', 'danger')
-            return render_template('organizer/create_event.html')
+            return render_template('organizer/create_event.html', categories=categories, preset_images=CATEGORY_IMAGES)
 
         try:
             event_date = datetime.strptime(date_str, '%Y-%m-%d').date()
@@ -97,16 +98,16 @@ def create_event():
             capacity = int(capacity_str)
         except ValueError:
             flash('Invalid date, time, or capacity format.', 'danger')
-            return render_template('organizer/create_event.html')
+            return render_template('organizer/create_event.html', categories=categories, preset_images=CATEGORY_IMAGES)
 
         # Check date not in past
         if event_date < date.today():
             flash('Event date cannot be in the past.', 'warning')
-            return render_template('organizer/create_event.html')
+            return render_template('organizer/create_event.html', categories=categories, preset_images=CATEGORY_IMAGES)
 
         if capacity <= 0:
             flash('Capacity must be a positive integer.', 'warning')
-            return render_template('organizer/create_event.html')
+            return render_template('organizer/create_event.html', categories=categories, preset_images=CATEGORY_IMAGES)
 
         new_event = Event(
             title=title,
@@ -131,13 +132,14 @@ def create_event():
             flash('Database error creating event. Please try again.', 'danger')
 
     categories = ['Technical', 'Cultural', 'Sports', 'Workshop', 'Hackathon', 'Quiz', 'Gaming', 'Webinar']
-    return render_template('organizer/create_event.html', categories=categories)
+    return render_template('organizer/create_event.html', categories=categories, preset_images=CATEGORY_IMAGES)
 
 @organizer_bp.route('/events/<int:event_id>/edit', methods=['GET', 'POST'])
 @role_required('organizer')
 def edit_event(event_id):
     organizer_id = session['user_id']
     event = Event.query.filter_by(id=event_id, organizer_id=organizer_id).first_or_404()
+    categories = ['Technical', 'Cultural', 'Sports', 'Workshop', 'Hackathon', 'Quiz', 'Gaming', 'Webinar']
 
     if request.method == 'POST':
         event.title = request.form.get('title', '').strip()
@@ -145,7 +147,12 @@ def edit_event(event_id):
         event.category = request.form.get('category', '').strip()
         event.venue = request.form.get('venue', '').strip()
         event.status = request.form.get('status', 'Upcoming')
-        event.image = request.form.get('image', '').strip() or event.image
+        
+        custom_img = request.form.get('image', '').strip()
+        if custom_img:
+            event.image = custom_img
+        elif not event.image or event.image == 'default_event.jpg':
+            event.image = CATEGORY_IMAGES.get(event.category, 'default_event.jpg')
 
         date_str = request.form.get('date', '').strip()
         time_str = request.form.get('time', '').strip()
@@ -157,14 +164,13 @@ def edit_event(event_id):
             event.capacity = int(capacity_str)
         except ValueError:
             flash('Invalid date, time or capacity format.', 'danger')
-            return render_template('organizer/edit_event.html', event=event)
+            return render_template('organizer/edit_event.html', event=event, categories=categories, preset_images=CATEGORY_IMAGES)
 
         db.session.commit()
         flash('Event details updated successfully!', 'success')
         return redirect(url_for('organizer.my_events'))
 
-    categories = ['Technical', 'Cultural', 'Sports', 'Workshop', 'Hackathon', 'Quiz', 'Gaming', 'Webinar']
-    return render_template('organizer/edit_event.html', event=event, categories=categories)
+    return render_template('organizer/edit_event.html', event=event, categories=categories, preset_images=CATEGORY_IMAGES)
 
 @organizer_bp.route('/events/<int:event_id>/delete', methods=['POST'])
 @role_required('organizer')

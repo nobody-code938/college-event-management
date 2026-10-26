@@ -21,6 +21,7 @@ A web-based **College Event Management System** designed for B.Tech CSE 3rd-year
 
 ### 👨‍🏫 Organizer Role
 * **Event Creation & Management:** Create, edit, and delete events with date/time validation (prevents past dates).
+* **Smart Banner Selection & Image API:** Automatically assigns category-matched banners upon event creation. Organizers can also select from curated theme presets, paste custom URLs, or click **"✨ Auto-Generate via API"** (Pollinations AI) with real-time live banner previews.
 * **Participant Roster & CSV Export:** View registered participants and download complete `.csv` participant spreadsheets.
 * **Digital Attendance Marking:** Mark student attendance (Present/Absent) with real-time turnout percentages.
 * **Organizer Console:** Quick metrics on created events, total registrations, and attendance statistics.
@@ -31,11 +32,12 @@ A web-based **College Event Management System** designed for B.Tech CSE 3rd-year
   * Bar Chart: Top Registered Events
   * Line Chart: Monthly Registration Growth Trend
 * **User Management:** Search users, filter by role, edit roles, and delete accounts (with protection for the last admin account).
-* **Event & Registration Oversight:** View, moderate, or delete any event or registration in the system.
+* **Event & Registration Oversight:** View, moderate, edit, or delete any event or registration in the system, including adjusting event banner images and schedules.
 * **Reports & Master CSV Export:** Printable reports module (`window.print()`) and downloadable master registrations `.csv`.
 
 ### 🌓 UI & Accessibility
 * **Dark / Light Mode Toggle:** Seamless one-click switcher in the top navigation bar with persistent `localStorage` preference and adaptive Chart.js data visualization.
+* **Dynamic Event Image Engine:** Category-based automated resolution ensuring all future events inherit relevant visual artwork across landing page, student catalogs, and detail pages.
 
 ---
 
