@@ -127,7 +127,10 @@ college-event-management/
 
 > **Note:** The credentials below are pre-configured by running `seed.py`.
 
-* **Admin Account:**
+* **Primary Administrator Account:**
+  * Email: `campusevent.admin@gmail.com`
+  * Password: `Admin@2026`
+* **Fallback Administrator Account:**
   * Email: `admin@example.com`
   * Password: `Admin@123`
 * **Organizer Account:**

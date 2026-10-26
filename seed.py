@@ -21,16 +21,27 @@ def seed_database():
         db.create_all()
 
         print("Seeding Users...")
-        # 1. Admin Account
+        # 1. Primary Admin Account
         admin = User(
-            name="System Admin",
+            name="Chief System Administrator",
+            email="campusevent.admin@gmail.com",
+            role="admin",
+            department="Office of Student Affairs",
+            year="System Administrator",
+            phone="9876543210"
+        )
+        admin.set_password("Admin@2026")
+
+        # Fallback Demo Admin
+        demo_admin = User(
+            name="Demo Admin",
             email="admin@example.com",
             role="admin",
             department="Computer Science & Engineering",
             year="Faculty",
-            phone="9876543210"
+            phone="9876543219"
         )
-        admin.set_password("Admin@123")
+        demo_admin.set_password("Admin@123")
 
         # 2. Organizer Account
         organizer1 = User(
@@ -95,7 +106,7 @@ def seed_database():
         )
         student4.set_password("Student@123")
 
-        db.session.add_all([admin, organizer1, organizer2, student1, student2, student3, student4])
+        db.session.add_all([admin, demo_admin, organizer1, organizer2, student1, student2, student3, student4])
         db.session.commit()
 
         print("Seeding Events...")
@@ -237,7 +248,8 @@ def seed_database():
         print("\nDatabase Seeding Completed Successfully!")
         print("---------------------------------------")
         print("Demo Credentials:")
-        print("  Admin:     admin@example.com / Admin@123")
+        print("  Admin:     campusevent.admin@gmail.com / Admin@2026")
+        print("  Fallback:  admin@example.com / Admin@123")
         print("  Organizer: organizer@example.com / Organizer@123")
         print("  Student:   student@example.com / Student@123")
         print("---------------------------------------")

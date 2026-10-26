@@ -144,7 +144,7 @@
 * **Objective:** Populate system with realistic demo accounts and sample events for viva demonstration.
 * **Activities:**
   * Authored `seed.py` generating:
-    * 3 core accounts: Admin (`admin@example.com`), Organizer (`organizer@example.com`), Student (`student@example.com`).
+    * Core accounts: Primary Admin (`campusevent.admin@gmail.com`), Fallback Admin (`admin@example.com`), Organizer (`organizer@example.com`), Student (`student@example.com`).
     * 8 realistic events (Annual Tech Fest, CodeSprint Hackathon, Coding Contest, Sports Meet, Cultural Fest, AI Bootcamp, Photography, Quiz).
     * Sample student registrations and marked attendance records.
 * **Deliverable:** Automated Seed Script (`python3 seed.py`).
