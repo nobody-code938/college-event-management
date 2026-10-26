@@ -176,7 +176,29 @@ python3 app.py
 ```
 
 Open your browser and navigate to:
-👉 **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
+👉 **[http://127.0.0.1:5001](http://127.0.0.1:5001)**
+
+---
+
+## 🚀 Permanent 24/7 Cloud Deployment (Render.com)
+
+This application is ready for 1-click 24/7 cloud hosting on [Render](https://render.com) (or Railway / PythonAnywhere):
+
+### Step 1: Push Project to GitHub
+```bash
+git remote add origin https://github.com/YOUR_USERNAME/college-event-management.git
+git branch -M main
+git push -u origin main
+```
+
+### Step 2: Deploy on Render
+1. Log in to [Render.com](https://render.com) and click **New +** ➔ **Web Service**.
+2. Connect your GitHub repository.
+3. Configure the service settings (or let `render.yaml` auto-configure):
+   * **Runtime:** `Python 3`
+   * **Build Command:** `pip install -r requirements.txt && python seed.py`
+   * **Start Command:** `gunicorn "app:create_app()"`
+4. Click **Deploy Web Service**. Render provides a permanent public HTTPS URL (`https://your-app.onrender.com`).
 
 ---
 

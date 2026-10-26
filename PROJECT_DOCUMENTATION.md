@@ -278,3 +278,14 @@ The project followed a structured sequential Waterfall SDLC model:
 * Automated email notifications for event reminders.
 * PDF Certificate generation for attendees.
 * Integration with payment gateway for premium paid workshops.
+
+---
+
+## 13. PRODUCTION CLOUD DEPLOYMENT SPECIFICATION
+
+The application is architected and configured for permanent 24/7 cloud hosting:
+
+* **Production WSGI Server:** `gunicorn` (Python WSGI HTTP Server) configured via [`Procfile`](file:///Users/nex/Desktop/college-event-management/Procfile) (`web: gunicorn "app:create_app()"`).
+* **Infrastructure as Code:** [`render.yaml`](file:///Users/nex/Desktop/college-event-management/render.yaml) blueprint defining build commands, auto-seeding (`python seed.py`), and environment variable generation.
+* **Database Portability:** [`config.py`](file:///Users/nex/Desktop/college-event-management/config.py) automatically detects `DATABASE_URL` for managed PostgreSQL (transforming legacy `postgres://` to `postgresql://`) with seamless fallback to SQLite.
+* **Auto-Schema Migration:** Application startup hook executes `db.create_all()` inside app context, guaranteeing table availability upon deployment.
